@@ -3,47 +3,33 @@ package com.educandoweb.course.dto;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.educandoweb.course.entities.Product;
 
-public class ProductInsertDTO implements Serializable {
+public class ProductCategoriesDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Long id;
 	private String name;
 	private String description;
 	private Double price;
 	private List<CategoryDTO> categories = new ArrayList<>();
 	private String imgUrl;
 
-	public ProductInsertDTO(Long id, String name, String description, Double price, List<CategoryDTO> categories) {
+	public ProductCategoriesDTO(String name, String description, Double price, String imgUrl) {
 		super();
-		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.price = price;
-		this.categories = categories;
+		this.imgUrl = imgUrl;
 	}
 
 
-	public ProductInsertDTO(Product product) {
-		this.id = product.getId();
-		this.name = product.getName();
-		this.description = product.getDescription();
-		this.price = product.getPrice();
-		this.categories = product.getCategories().stream().map(e -> new CategoryDTO(e)).collect(Collectors.toList());		
-	}
-
-
-	public Long getId() {
-		return id;
-	}
-
-
-	public void setId(Long id) {
-		this.id = id;
+	public ProductCategoriesDTO(Product entity) {
+		setName(entity.getName());
+		setDescription(entity.getDescription());
+		setPrice(entity.getPrice());
+		setImgUrl(entity.getImgUrl());
 	}
 
 
@@ -82,12 +68,17 @@ public class ProductInsertDTO implements Serializable {
 	}
 
 
-	public void setCategories(List<CategoryDTO> categories) {
-		this.categories = categories;
-	}	
+	public String getImgUrl() {
+		return imgUrl;
+	}
+
+
+	public void setImgUrl(String imgUrl) {
+		this.imgUrl = imgUrl;
+	}
 
 	public Product toEntity() {
-		return new Product(id, name, description, price, imgUrl);
+		return new Product(null, name, description, price, imgUrl);
 	}
 
 }
