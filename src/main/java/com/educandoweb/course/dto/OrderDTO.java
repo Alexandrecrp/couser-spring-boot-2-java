@@ -2,42 +2,46 @@ package com.educandoweb.course.dto;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.educandoweb.course.entities.Order;
-import com.educandoweb.course.entities.Payment;
+import com.educandoweb.course.entities.User;
 import com.educandoweb.course.entities.enums.OrderStatus;
+
 
 public class OrderDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
 	private Instant moment;
-	private Integer orderStatus;
-	private UserDTO client;
-	private List<ProductDTO> items = new ArrayList<ProductDTO>();
-	private Payment payment;
-
-	public OrderDTO(Long id, Instant moment, Integer orderStatus, UserDTO client, List<ProductDTO> items,
-			Payment payment) {
-		super();
-		this.id = id;
-		this.moment = moment;
-		this.orderStatus = orderStatus;
-		this.client = client;
-		this.items = items;
-		this.payment = payment;
+	private OrderStatus orderstatus;
+	private Long clientId;
+	private String clientName;
+	private String clientEmail;
+	
+	public OrderDTO() {
+		
 	}
 
-	public OrderDTO(Order order) {
-		this.id = order.getId();
-		this.moment = order.getMoment();
-		this.orderStatus = order.getOrderstatus().getCode();
-		this.client = new UserDTO(order.getClient());
-		this.items = order.getItems().stream().map(e -> new ProductDTO(e.getProduct())).collect(Collectors.toList());
-		this.payment = order.getPayment();
+	public OrderDTO(Long id, Instant moment, OrderStatus orderstatus, Long clientId, String clientName,
+			String clientEmail) {
+		this.id = id;
+		this.moment = moment;
+		this.orderstatus = orderstatus;
+		this.clientId = clientId;
+		this.clientName = clientName;
+		this.clientEmail = clientEmail;
+	}
+	
+	public OrderDTO(Order entity) {
+		if(entity.getClient() == null) {
+			throw new IllegalArgumentException("Error instantiating OrderDTO: client was null");
+		}
+		this.id = entity.getId();
+		this.moment = entity.getMoment();
+		this.orderstatus = entity.getOrderstatus();
+		this.clientId = entity.getClient().getId();
+		this.clientName = entity.getClient().getName();
+		this.clientEmail = entity.getClient().getEmail();
 	}
 
 	public Long getId() {
@@ -56,41 +60,41 @@ public class OrderDTO implements Serializable {
 		this.moment = moment;
 	}
 
-	public Integer getOrderStatus() {
-		return orderStatus;
+	public OrderStatus getOrderstatus() {
+		return orderstatus;
 	}
 
-	public void setOrderStatus(Integer orderStatus) {
-		this.orderStatus = orderStatus;
+	public void setOrderstatus(OrderStatus orderstatus) {
+		this.orderstatus = orderstatus;
 	}
 
-	public UserDTO getClient() {
-		return client;
+	public Long getClientId() {
+		return clientId;
 	}
 
-	public void setClient(UserDTO client) {
-		this.client = client;
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
 	}
 
-	public List<ProductDTO> getItems() {
-		return items;
+	public String getClientName() {
+		return clientName;
 	}
 
-	public void setItems(List<ProductDTO> items) {
-		this.items = items;
+	public void setClientName(String clientName) {
+		this.clientName = clientName;
 	}
 
-	public Payment getPayment() {
-		return payment;
+	public String getClientEmail() {
+		return clientEmail;
 	}
 
-	public void setPayment(Payment payment) {
-		this.payment = payment;
+	public void setClienteEmail(String clientEmail) {
+		this.clientEmail = clientEmail;
 	}
-
-	public Order toEnttiy() {
-		return new Order(id, moment, OrderStatus.valueOf(orderStatus), client.toEntity());
+	
+	public Order toEntity() {
+		User client = new User(clientId, clientName, clientEmail, null, null);
+		return new Order(id, moment, orderstatus, client);
 	}
-
-
+	
 }
