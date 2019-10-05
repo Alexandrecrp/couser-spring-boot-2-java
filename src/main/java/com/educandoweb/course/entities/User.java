@@ -1,22 +1,30 @@
 package com.educandoweb.course.entities;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 
 
 @Entity
 @Table(name = "tb_user")
-public class User implements Serializable {
+public class User implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -32,6 +40,10 @@ public class User implements Serializable {
 	
 	@OneToMany(mappedBy = "client")
 	private List<Order> orders = new ArrayList<>();
+	
+	@ManyToMany
+	@JoinTable(name = "tb_user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private Set<Role> roles = new HashSet<>();
 	
 	public User() {
 		
@@ -90,6 +102,10 @@ public class User implements Serializable {
 		return orders;
 	}
 	
+	public Set<Role> getRoles(){
+		return roles;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -115,7 +131,36 @@ public class User implements Serializable {
 		return true;
 	}
 
-	
-	
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		
+		return roles;
+	}
+
+	@Override
+	public String getUsername() {
+		
+		return email;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
 	
 }
