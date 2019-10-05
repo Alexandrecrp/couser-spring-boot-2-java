@@ -33,6 +33,9 @@ public class UserService implements UserDetailsService {
 	@Autowired
 	private BCryptPasswordEncoder passwordEncode;
 	
+	@Autowired
+	private AuthService authService;
+	
 	public List<UserDTO> findAll(){
 		List<User> list = repository.findAll();
 		return list.stream().map(e -> new UserDTO(e)).collect(Collectors.toList());
@@ -40,6 +43,7 @@ public class UserService implements UserDetailsService {
 	}
 	
 	public UserDTO findById(Long id) {
+		authService.validadeSelfOrAdmin(id);
 		Optional<User> obj = repository.findById(id);
 		User entity = obj.orElseThrow(()-> new ResourceNotFoundException(id));
 		return new UserDTO(entity);
@@ -66,6 +70,7 @@ public class UserService implements UserDetailsService {
 	@Transactional
 	public UserDTO update(Long id, UserDTO dto) {
 		try {
+		authService.validadeSelfOrAdmin(id);
 		User entity = repository.getOne(id);
 		updateData(entity, dto);
 		entity = repository.save(entity);
