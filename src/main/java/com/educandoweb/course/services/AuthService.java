@@ -8,9 +8,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.educandoweb.course.JWTUtil;
 import com.educandoweb.course.dto.CredentialsDTO;
 import com.educandoweb.course.dto.TokenDTO;
+import com.educandoweb.course.security.JWTUtil;
 
 import services.exceptions.JWTAuthenticationException;
 
