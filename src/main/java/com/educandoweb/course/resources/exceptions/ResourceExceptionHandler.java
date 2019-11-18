@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import services.exceptions.DatabaseException;
+import services.exceptions.JWTAuthenticationException;
+import services.exceptions.JWTAuthorizationException;
 import services.exceptions.ResourceNotFoundException;
 
 @ControllerAdvice
@@ -41,6 +43,22 @@ public class ResourceExceptionHandler {
 		for(FieldError x : e.getBindingResult().getFieldErrors())
 			err.addError(x.getField(), x.getDefaultMessage());		
 
+		return ResponseEntity.status(status).body(err);
+	}
+	
+	@ExceptionHandler(JWTAuthenticationException.class)
+	public ResponseEntity<StandardError> jWTAuthentication(JWTAuthenticationException e, HttpServletRequest request){
+		String error = "Authentication error";
+		HttpStatus status = HttpStatus.UNAUTHORIZED;
+		StandardError err = new StandardError(Instant.now(),status.value(), error, e.getMessage(), request.getRequestURI());
+		return ResponseEntity.status(status).body(err);
+	}
+	
+	@ExceptionHandler(JWTAuthorizationException.class)
+	public ResponseEntity<StandardError> jWTAuthorization(JWTAuthorizationException e, HttpServletRequest request){
+		String error = "Authentication error";
+		HttpStatus status = HttpStatus.FORBIDDEN;
+		StandardError err = new StandardError(Instant.now(),status.value(), error, e.getMessage(), request.getRequestURI());
 		return ResponseEntity.status(status).body(err);
 	}
 }
