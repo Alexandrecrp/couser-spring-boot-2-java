@@ -2,7 +2,6 @@ package com.educandoweb.course.services;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -94,5 +93,11 @@ public class ProductService {
 		throw new DatabaseException(e.getMessage());
 	}
 }
+    @Transactional(readOnly = true)
+	public Page<ProductDTO> findByCategoryPaged(Long categoryId, Pageable pageable) {
+		Category category = categoryRepository.getOne(categoryId);
+		Page<Product> products = repository.findByCategory(category, pageable);
+		return products.map(e -> new ProductDTO(e));
+	}
 
 }
