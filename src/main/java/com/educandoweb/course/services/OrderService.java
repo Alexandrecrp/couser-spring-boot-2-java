@@ -15,6 +15,7 @@ import com.educandoweb.course.entities.Order;
 import com.educandoweb.course.entities.OrderItem;
 import com.educandoweb.course.entities.User;
 import com.educandoweb.course.repositories.OrderRepository;
+import com.educandoweb.course.repositories.UserRepository;
 
 import services.exceptions.ResourceNotFoundException;
 
@@ -23,6 +24,9 @@ public class OrderService {
 
 	@Autowired
 	private OrderRepository repository;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	@Autowired
 	private AuthService authService;
@@ -51,5 +55,12 @@ public class OrderService {
 		authService.validadeOwnOrderOrAdmin(order);
 		Set<OrderItem> set = order.getItems();
 		return set.stream().map(e -> new OrderItemDTO(e)).collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public List<OrderDTO> findByClientId(Long clientId) {
+		User client = userRepository.getOne(clientId);
+		List<Order> list = repository.findByClient(client);
+		return list.stream().map(e -> new OrderDTO(e)).collect(Collectors.toList());
 	}
 }
